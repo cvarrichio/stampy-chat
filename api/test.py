@@ -17,7 +17,7 @@ async def send_to_api(question, session):
                 response_text = await resp.text()
                 logging.debug(f"API response: {response_text}")
                 if resp.status != 200:
-                    logging.info(f"Error on API request: {await resp.json(content_type=None)}")
+                    logging.info(f"Error on API request: {await resp.json()}")
                 return await resp.json(content_type=None),question if resp.status == 200 else None
         except (Exception) as e:
                 logging.info(f"Error on API request, retrying: {e}")
@@ -63,6 +63,9 @@ if __name__ == '__main__':
         "Can we just turn off AI if it becomes dangerous?",
         "Can AI become conscious or have feelings?"
     ]
+
+    with open('../tests/query_tests.csv', 'r') as file:
+        questions = list(csv.reader(file))
     results = asyncio.run(call_api(questions))
 
     # Prepare data for CSV
@@ -82,6 +85,6 @@ if __name__ == '__main__':
     now = datetime.datetime.now() # current date and time
     timestamp = now.strftime("%Y%m%d%H%M%S")
 
-    with open(f'prompt_test_results_{timestamp}.csv', 'w', newline='', encoding='utf-8') as file:
+    with open(f'../tests/results/prompt_test_results_{timestamp}.csv', 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerows(csv_data)
